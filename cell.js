@@ -67,11 +67,11 @@ Cell.prototype.reveal = function(force) {
 }
 
 Cell.prototype.flag = function(force) {
-    if(!this.revealed) {
+    if(!this.revealed)
         this.flagged = !this.flagged;
-    }
 
     this.update_cell();
+    return this.flagged;
 }
 
 Cell.prototype.update_cell = function() {

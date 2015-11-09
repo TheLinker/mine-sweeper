@@ -3,6 +3,7 @@ var Board = function (sizex, sizey, bombs) {
     this.sizex = sizex || 10;
     this.sizey = sizey || 10;
     this.bombs = bombs || 10;
+    this.found = 0;
     this.checkboard = [];
 }
 
@@ -45,6 +46,9 @@ Board.prototype.init_bombs = function () {
         if(this.checkboard[row][col].has_bomb) i--;
         this.checkboard[row][col].has_bomb = true;
     }
+
+    this.found = 0;
+    this.update_found_div();
 }
 
 Board.prototype.get_table = function () {
@@ -69,8 +73,6 @@ Board.prototype.install_events = function () {
     $(".cell-closed").mousedown(function (ev) {
         ev.preventDefault();
 
-        start_watch();
-
         var col = $(this).attr('data-col');
         var row = $(this).attr('data-row');
 
@@ -91,7 +93,6 @@ Board.prototype.end_game = function () {
 }
 
 Board.prototype.reveal_cell = function (cell_row,cell_col) {
-    start_watch();
     var res = this.checkboard[cell_row][cell_col].reveal();
     switch(res) {
     case 2: 
@@ -106,6 +107,7 @@ Board.prototype.reveal_cell = function (cell_row,cell_col) {
         this.end_game();
     break;
     case 3:
+        start_watch();
         var arr = [[ 1, 0],[ 0, 1],
                    [-1, 0],[ 0,-1],
                    [ 1, 1],[-1,-1],
@@ -156,5 +158,14 @@ Board.prototype.reveal_cell = function (cell_row,cell_col) {
 
 Board.prototype.flag_cell = function (cell_row,cell_col) {
     var res = this.checkboard[cell_row][cell_col].flag();
+
+    if(res) this.found ++ ;
+    else    this.found -- ;
+    this.update_found_div();
+
     return res;
+}
+
+Board.prototype.update_found_div = function (cell_row,cell_col) {
+    $('#found').val(this.found + " / " + this.bombs);
 }
