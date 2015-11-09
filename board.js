@@ -74,7 +74,7 @@ Board.prototype.install_events = function () {
         var col = $(this).attr('data-col');
         var row = $(this).attr('data-row');
 
-        switch (event.which) {
+        switch (ev.which) {
             case 1:
                 board.reveal_cell(row, col);
                 break;
