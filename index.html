@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js" ></script>
+<script>
+var checkboard = [];
+</script>
+
+<script src="board.js" ></script>
+<script src="cell.js" ></script>
+<link rel="stylesheet" href="font-awesome-4.4.0/css/font-awesome.min.css">
+
+<style>
+table {
+    border-spacing: 0px;
+    margin: 0 auto;
+}
+td {
+    padding: 0px;
+}
+html, body {
+    background: lightgray;
+}
+#table {
+    overflow: auto;
+}
+.cell {
+    display: inline-block;
+    border-width: 1px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+}
+.cell-closed {
+    border-style: outset;
+    background: #ccc;
+    color: #333;
+    text-align: center;
+}
+.cell-open {
+    border-style: inset;
+    color: #333;
+    text-align: center;
+    background: #eee;
+}
+.cell-closed:hover {
+    background: #cee;
+}
+.cell-closed:active {
+    border-style: inset;
+    background: #eee;
+}
+</style>
+<script>
+
+var started = false;
+var timer;
+function start_watch() {
+    if(!started) {
+        $('#time').val(0);
+
+        timer = setInterval(function() {
+            var time = parseFloat($('#time').val());
+            time += 0.1;
+            $('#time').val(Math.round(time * 1000) / 1000);
+        }, 100);
+
+        started = true;
+    }
+}
+
+function stop_watch() {
+    if(timer) clearInterval(timer);
+    timer = null;
+    started = false;
+}
+
+// function end_game() {
+//     clearInterval(timer);
+//     $(".cell-closed").unbind('mousedown');
+// }
+
+// function reveal(row, col, obj, force) {
+//     force = force || false;
+
+//     if(obj.hasClass('cell-open')) return;
+//     if((force===false) && obj.hasClass('cell-flag')) return;
+
+//     $(obj).removeClass('cell-closed');
+//     $(obj).addClass('cell-open');
+
+//     if(checkboard[row][col]) {
+//         if(obj.hasClass('cell-flag')) {
+//             $(obj).removeClass('fa-flag');
+//             $(obj).addClass('fa fa-close');
+//         } else
+//             $(obj).addClass('fa fa-bomb');
+
+//         $.each(checkboard, function(row) {
+//             $.each(checkboard[row], function(col, val) {
+//                 if(val) reveal(row, col, $('#cell_'+col+'_'+row), true);
+//             });
+//         });
+
+//         end_game();
+//         return false;
+//     } else {
+//         var arr = [[ 1, 0],[ 0, 1],
+//                    [-1, 0],[ 0,-1],
+//                    [ 1, 1],[-1,-1],
+//                    [ 1,-1],[-1, 1]];
+
+//         //Cuento cuantas bombas hay alrededor
+//         var count = 0;
+
+//         $.each(arr, function(_, vec) {
+//             if(typeof checkboard[parseInt(row) + vec[0] ] !== 'undefined' && 
+//                typeof checkboard[parseInt(row) + vec[0] ][ parseInt(col) + vec[1] ] !== 'undefined' && 
+//                checkboard[parseInt(row) + vec[0] ][ parseInt(col) + vec[1] ])
+//                 count++;
+//         });
+
+//         //Si hay >= 1 lo muestro
+//         if(count != 0) 
+//             $(obj).html(count);
+
+//         //Si no, sigo la recursividad
+//         else
+//             for(var i = 0;i < arr.length;i++) {
+//                 new_col = parseInt(col) + arr[i][1];
+//                 new_row = parseInt(row) + arr[i][0];
+
+//                 if(typeof checkboard[new_row] !== 'undefined' && 
+//                    typeof checkboard[new_row][new_col] !== 'undefined')
+//                     reveal(new_row, new_col, $('#cell_'+new_col+'_'+new_row));
+//             };
+
+//         //Me fijo si ya termino el juego
+//         var faltan = 0;
+//         $.each(checkboard, function(row) {
+//             $.each(checkboard[row], function(col, val) {
+//                 if(!val && $('#cell_'+col+'_'+row).hasClass('cell-closed')) faltan++;
+//             });
+//         });
+//         if(faltan === 0) end_game();
+//     }
+// }
+
+// var encontradas = 0;
+// var bombs = 0;
+// function flag_unflag_cell(row, col, obj) {
+//     if(obj.hasClass('cell-flag')) {
+//         $(obj).removeClass('cell-flag fa fa-flag');
+//         encontradas--;
+//     } else if (obj.hasClass('cell-closed')) {
+//         $(obj).addClass('cell-flag fa fa-flag');
+//         encontradas++;
+//     }
+//     $('#bombs').val(encontradas + " / " + bombs);
+// }
+
+// function register_events() {
+//     $('body, html').contextmenu(function(ev) {
+//         ev.preventDefault();
+//         return false;
+//     });
+//     $(".cell-closed").mousedown(function (ev) {
+//         ev.preventDefault();
+
+//         start_watch();
+
+//         var col = $(this).attr('data-col');
+//         var row = $(this).attr('data-row');
+
+//         switch (event.which) {
+//             case 1:
+//                 reveal(row, col, $(this));
+//                 return false;
+//             case 3:
+//                 flag_unflag_cell(row, col, $(this));
+//         }
+//     })
+// }
+
+// $(function() {
+//     $("#create-table").click(function (){
+//         var cols = $("#cols").val();
+//         var rows = $("#rows").val();
+//         bombs = 0;
+//         encontradas = 0;
+
+//         started = false;
+//         clearInterval(timer);
+//         $('#time').val(0);
+//         checkboard = [];
+
+//         var a_table = $('<table>');
+//         for(var i=0;i<rows;i++) {
+//             var tmp = [];
+//             var one_row = $('<tr>');
+//             for(var j=0;j<cols;j++) {
+//                 var extra = "";
+//                 if (Math.floor(Math.random() * 10 + 1) > 9) {
+//                     bombs++;
+//                     tmp.push(true);
+//                 } else {
+//                     tmp.push(false);
+//                 }
+//                 one_row.append($('<td class="cell cell-closed">').attr('id', 'cell_'+j+'_'+i).attr('data-col', j).attr('data-row', i));
+//             }
+//             checkboard.push(tmp);
+//             a_table.append(one_row.clone());
+//         }
+
+//         $('#table').html("");
+//         $('#table').append(a_table);
+//         $('#bombs').val("0 / " + bombs);
+
+//         register_events();
+//     });
+
+// });
+
+
+var board = {};
+$(function () {
+    $("#create-table").click(function (){
+        board = new Board($("#cols").val(), $("#rows").val(), $("#bombs").val());
+        board.init_checkboard('#table');
+        board.init_bombs();
+    });
+});
+</script>
+<div id="toolbar">
+    Columnas: <input id="cols" type="number" value="10" max="50"></input>
+    Filas: <input id="rows" type="number" value="10" max="50"></input>
+    Bombas: <input id="bombs" type="number" value="20"></input>
+    <button id="create-table">Nuevo</button>
+    Tiempo: <input id="time" disabled></input>
+</div>
+<br/>
+<br/>
+<div id="table"></div>
+</body>
+</html>
